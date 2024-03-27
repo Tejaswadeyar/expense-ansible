@@ -43,4 +43,4 @@
     - name: Install Nginx
       ansible.builtin.dnf:
         name: nginx
-        state: install
+        state: installed
