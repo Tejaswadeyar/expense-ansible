@@ -45,30 +45,30 @@
         name: nginx
         state: installed
 
-- name: Copy expense configuration File
-  ansible.builtin.copy:
-    src: expense.conf
-    dest: /etc/nginx/default.d/expense.conf
+    - name: Copy expense configuration File
+      ansible.builtin.copy:
+        src: expense.conf
+        dest: /etc/nginx/default.d/expense.conf
 
 
-- name: Delete exiting App Content
-  ansible.builtin.file:
-    path: /usr/share/nginx/html
-    state: absent
+    - name: Delete exiting App Content
+      ansible.builtin.file:
+        path: /usr/share/nginx/html
+        state: absent
 
-- name: Create App Directory
-  ansible.builtin.file:
-    path: /usr/share/nginx/html
-    state: directory
+    - name: Create App Directory
+      ansible.builtin.file:
+        path: /usr/share/nginx/html
+        state: directory
 
-- name: Download and extract App Content
-  ansible.builtin.unarchive:
-    src: https://expense-artifacts.s3.amazonaws.com/frontend.zip
-    dest: /usr/share/nginx/html
-    remote_src: yes
+    - name: Download and extract App Content
+      ansible.builtin.unarchive:
+        src: https://expense-artifacts.s3.amazonaws.com/frontend.zip
+        dest: /usr/share/nginx/html
+        remote_src: yes
 
-- name: Start Nginx service
-  ansible.builtin.systemd_service:
-    name: nginx
-    enabled: true
-    state: restarted
+    - name: Start Nginx service
+      ansible.builtin.systemd_service:
+        name: nginx
+        enabled: true
+        state: restarted
