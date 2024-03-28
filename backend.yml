@@ -121,5 +121,5 @@
         name: all
         target: /app/schema/backend.sql
         login_user: root
-        login_pasword: ExpenseApp@1
+        login_password: ExpenseApp@1
         login_host: mysql-dev.tejas1996.online
