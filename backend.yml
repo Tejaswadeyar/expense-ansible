@@ -112,7 +112,7 @@
 
     - name: Install MySQL Client
       ansible.builtin.dnf:
-        scr: mysql
+        src: mysql
         state: installed
 
     - name: Load Scheme
