@@ -1,0 +1,125 @@
+#Head "disable the default version"
+#dnf module disable nodejs -y &>>$log_file
+#dnf module enable nodejs:18 -y &>>$log_file
+#
+#Stat $?
+#
+#
+#Head "install the nodejs"
+#dnf install nodejs -y &>>$log_file
+#cp backend.service /etc/systemd/system/backend.service &>>$log_file
+#Stat $?
+#
+#Head "add username"
+#id expense &>>$log_file
+#if [ $? -ne 0 ]; then
+#useradd expense &>>$log_file
+#fi
+#Stat $?
+#
+#Head "remove app folder"
+#rm -rf $1 &>>$log_file
+#Stat $?
+#
+#Head "create application directory"
+#mkdir $1 &>>$log_file
+#Stat $?
+#
+#Head "Download the application content"
+#curl -o /tmp/${component}.zip https://expense-artifacts.s3.amazonaws.com/${component}.zip &>>$log_file
+#Stat $?
+#
+#cd $1
+#
+#Head "Extract the application content"
+#unzip /tmp/${component}.zip &>>$log_file
+#Stat $?
+#}
+#
+#Head "downloading the application dependencies"
+#npm install &>>$log_file
+#Stat $?
+#
+#Head "download systemD"
+#systemctl daemon-reload &>>$log_file
+#Stat $?
+#
+#Head "enable backend"
+#systemctl enable backend &>>$log_file
+#Stat $?
+#
+#Head "restart backend"
+#systemctl restart backend &>>$log_file
+#Stat $?
+#
+#Head "install mysql"
+#dnf install mysql -y &>>$log_file
+#Stat $?
+#
+#Head "Load schema"
+#mysql -h mysql-dev.tejas1996.online -uroot -p${MYSQL_PASSWORD} < /app/schema/backend.sql &>>$log_file
+#Stat $?
+
+- name: backend setup
+  hosts: all
+  become: yes
+  tasks:
+    - name: Disable default Version of NodeJS
+      ansible.builtin.shell: dnf module disable nodejs -y
+
+    - name: Enable Nodejs version
+      ansible.builtin.shell: dnf module enable nodejs:18 -y
+
+    - name: install Nodejs
+      ansible.builtin.dnf:
+        name: nodejs
+        state: installed
+
+    - name: Configure backend service
+      ansible.builtin.copy:
+        src: backend.service
+        dest: etc/systemd/system/backend.service
+
+    - name: Adding Application user
+      ansible.builtin.user:
+        name: expense
+
+    - name: Remove exiting App Content
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: create Application Directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: Download and Extract app content
+      ansible.builtin.unarchive:
+        src: https://expense-artifacts.s3.amazonaws.com
+        dest: /app
+        remote_src: true
+
+    - name: Download Dependencies
+      community.general.npm:
+        path: /app
+
+    - name: Reloading SystemD and Start backend Service
+      ansible.builtin.systemd_service:
+        name: backend
+        state: restarted
+        enabled: yes
+
+    - name: Install MySQL Client
+      ansible.builtin.dnf:
+        scr: mysql
+        state: installed
+
+    - name: Load Scheme
+      community.mysql.mysql_db:
+        state: import
+        name: all
+        target: /app/schema/backend.sql
+        login_user: root
+        login_pasword: ExpenseApp@1
+        login_host: mysql-dev.tejas1996.online
