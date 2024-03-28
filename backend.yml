@@ -63,9 +63,6 @@
 - name: backend setup
   hosts: all
   become: yes
-  gather_facts: yes
-  vars:
-      ansible_python_interpreter: /usr/bin/python2
   tasks:
     - name: Disable default Version of NodeJS
       ansible.builtin.shell: dnf module disable nodejs -y
@@ -116,6 +113,12 @@
     - name: install mysql client
       ansible.builtin.dnf:
         name: mysql
+        state: installed
+
+
+    - name: Install python Library for MySQL
+      ansible.builtin.dnf:
+        name: python3-PyMySQL
         state: installed
 
     - name: Load Scheme
