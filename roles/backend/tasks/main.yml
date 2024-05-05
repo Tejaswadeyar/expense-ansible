@@ -33,6 +33,7 @@
     name: backend
     state: restarted
     enabled: yes
+    daemon-reload: yes
 
 - name: Install Mysql & python Library for MySQL
   ansible.builtin.dnf:
