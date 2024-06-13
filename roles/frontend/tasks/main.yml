@@ -18,3 +18,8 @@
     name: nginx
     enabled: true
     state: restarted
+
+#- name: Install Node Exporter
+#  ansible.builtin.include_role:
+#    name: common
+#    tasks_from: node_exporter
